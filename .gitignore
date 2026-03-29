@@ -67,3 +67,6 @@ env/
 build/
 dist/
 *.egg-info/
+
+# PDF documents (原始规则书，已拆解为 Markdown)
+*.pdf
