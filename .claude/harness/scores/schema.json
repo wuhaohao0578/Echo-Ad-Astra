@@ -1,0 +1,31 @@
+{
+  "description": "每个 outcome record 记录用户对 Claude 某个行动的反馈",
+  "fields": {
+    "outcome_id": "out-YYYY-MM-DD-NNNN，唯一标识",
+    "trace_id": "对应的 trace entry ID",
+    "session_id": "会话 ID",
+    "timestamp_utc": "ISO 8601",
+    "workflow": "对应工作流",
+    "verdict": "accepted|modified|rejected|no_response",
+    "modification": {
+      "type": "content_edit|placement_change|tone_adjust|factual_correction（verdict=modified 时）",
+      "description": "修改描述",
+      "user_correction_quote": "用户的原话（如果简短）"
+    },
+    "quality": {
+      "terminology_accuracy": "1-5 或 null",
+      "world_consistency": "1-5 或 null",
+      "file_placement": "1-5 或 null",
+      "style_fidelity": "1-5 或 null",
+      "rule_clarity": "1-5 或 null",
+      "overall": "1-5 或 null"
+    },
+    "scope": "action|session|workflow",
+    "note": "用户自由文本，可为 null"
+  },
+  "verdict_triggers": {
+    "accepted": ["确认", "继续", "是的", "好的", "✓", "[✓]", "ok", "OK"],
+    "modified": "用户修改内容后说确认（由 Claude 在响应中识别）",
+    "rejected": ["不对", "错了", "取消", "不", "✗", "[✗]", "停止", "重来"]
+  }
+}

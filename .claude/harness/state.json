@@ -1,0 +1,11 @@
+{
+  "current_session_id": null,
+  "session_start_utc": null,
+  "session_action_counter": 0,
+  "daily_session_counter": {},
+  "harness_version": "2.0.0",
+  "active_candidate": "v1.0.0-2026-04-01",
+  "total_sessions_lifetime": 0,
+  "last_proposal_date": null,
+  "outcomes_since_last_proposal": 0
+}

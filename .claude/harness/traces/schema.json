@@ -1,0 +1,31 @@
+{
+  "description": "每个 trace entry 是 JSONL 文件中的一行，记录 Claude 的一次具体行动",
+  "fields": {
+    "trace_id": "YYYY-MM-DD-session-NNN-NNNN，唯一标识",
+    "session_id": "YYYY-MM-DD-session-NNN",
+    "timestamp_utc": "ISO 8601",
+    "sequence": "本 session 内的行动序号（从 0 开始）",
+    "workflow": "工作流枚举：rule_modification|novel_update|balance_check|file_placement|version_release|terminology_management|consistency_check|harness_meta|ad_hoc",
+    "workflow_step": "工作流内的子步骤",
+    "action": {
+      "type": "行动类型：file_write|file_read|terminology_check|balance_check|consistency_check|git_commit|version_bump|query_user|generate_plan|style_suggestion|placement_suggestion",
+      "target_path": "相对于项目根目录的文件路径，不适用时为 null",
+      "description_zh": "行动的中文描述",
+      "content_summary": "内容摘要（不超过 200 字）",
+      "line_range": "[start, end] 或 null",
+      "reasoning": "Claude 的决策理由",
+      "confidence": "0.0-1.0，Claude 的自信度评估"
+    },
+    "harness_rule_ref": "CLAUDE.md 中授权本行动的章节路径，例如 workflow.rule_modification.step4",
+    "pre_checks": [
+      {
+        "check": "检查类型：terminology_scan|consistency_scan|balance_check|style_sample",
+        "result": "pass|warn|fail",
+        "findings": ["发现的问题列表"]
+      }
+    ],
+    "user_confirmation_required": "布尔值",
+    "user_confirmation_trigger": "触发确认的规则名称",
+    "outcome": "填充后的 outcome_id，初始为 null"
+  }
+}
