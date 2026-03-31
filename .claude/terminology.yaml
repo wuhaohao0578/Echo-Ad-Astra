@@ -1,0 +1,63 @@
+# Echo Ad Astra 术语权威来源
+# 这是唯一的术语真相来源，所有创作内容必须遵循此处的术语规范
+# 每次在内容中发现新术语时，追加到此文件
+
+version: "1.0.0"
+last_updated: "2026-04-01"
+
+factions:
+  - canonical: "星际联邦"
+    aliases: ["星际联盟", "联邦政府", "星联", "联邦"]
+    context: "游戏世界的主要政治实体"
+
+  - canonical: "自由联盟"
+    aliases: ["自由同盟", "自由军", "联盟"]
+    context: "对抗星际联邦的反抗组织"
+
+  - canonical: "SIGMA"
+    aliases: ["西格玛", "σ组织"]
+    context: "神秘的第三方势力，参见 rules/02-世界观设定/SIGMA.md"
+
+technology:
+  - canonical: "超光速引擎"
+    aliases: ["FTL引擎", "曲速引擎", "超光速驱动", "FTL驱动"]
+    context: "星际旅行核心技术"
+
+  - canonical: "量子通讯"
+    aliases: ["量子通信", "量子传输", "量子链接"]
+    context: "注意：在中文语境中统一使用'讯'而非'信'"
+
+  - canonical: "谐素"
+    aliases: ["协素", "和谐素", "Lucidine"]
+    context: "游戏世界的核心物质，参见 rules/02-世界观设定/谐素.md"
+
+locations:
+  - canonical: "新地球"
+    aliases: ["新地球星", "地球二号", "第二地球"]
+    context: "人类在星际时代的核心居住地"
+
+  - canonical: "六大节点"
+    aliases: ["六节点", "六个坐标节点", "节点系统"]
+    context: "参见 rules/02-世界观设定/六大节点.md"
+
+game_mechanics:
+  - canonical: "天平系统"
+    aliases: ["平衡系统", "天平机制", "天平判定"]
+    context: "核心判定机制，使用 12D6 骰池，参见 rules/01-判定系统/天平系统.md"
+
+  - canonical: "同步率"
+    aliases: ["同步度", "同步值", "共鸣率"]
+    context: "角色状态指标，参见 rules/03-角色创建/同步率与意志力.md"
+
+  - canonical: "三重锚点"
+    aliases: ["三锚点", "锚点系统", "三点锚定"]
+    context: "角色创建核心机制，参见 rules/03-角色创建/三重锚点.md"
+
+  - canonical: "广播指数"
+    aliases: ["广播值", "信号指数", "广播强度"]
+    context: "世界状态指标，参见 rules/02-世界观设定/广播指数.md"
+
+roles:
+  - canonical: "同步员"
+    aliases: ["同步者", "协调员", "同步师"]
+    context: "参见 rules/02-世界观设定/同步员.md"
