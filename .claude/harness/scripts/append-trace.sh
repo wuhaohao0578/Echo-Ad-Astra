@@ -25,7 +25,7 @@ done
 # 如果没有提供 session，从 state.json 读取
 if [[ -z "$SESSION_ID" ]]; then
     SESSION_ID=$(python3 -c "
-import json
+import json, sys
 with open('$STATE_FILE') as f:
     s = json.load(f)
 print(s.get('current_session_id', '') or '')
@@ -36,8 +36,6 @@ if [[ -z "$SESSION_ID" ]]; then
     echo "ERROR: No active session. Run init-session.sh first." >&2
     exit 1
 fi
-
-TRACE_FILE="$TRACES_DIR/${SESSION_ID}.jsonl"
 
 # 如果提供了响应文本，从中提取 TRACE 注释
 if [[ -n "$RESPONSE_TEXT" ]]; then
@@ -58,47 +56,58 @@ if [[ -z "$TRACE_JSON" ]]; then
     TRACE_JSON='{}'
 fi
 
-# 将 TRACE_JSON 写入临时文件以避免 shell 转义问题
+# Fix #1: Write TRACE_JSON to temp file and pass path via env var (avoid shell interpolation into Python source)
+# Fix #2: Use atomic write (temp file + os.replace) for state.json
 TMPFILE=$(mktemp)
 trap 'rm -f "$TMPFILE"' EXIT
 printf '%s' "$TRACE_JSON" > "$TMPFILE"
 
-# 获取当前序号并递增
-python3 - <<PYEOF
-import json
+export STATE_FILE TRACES_DIR SESSION_ID TMPFILE
+
+python3 - <<'PYEOF'
+import json, os
 from datetime import datetime
 
-with open('$STATE_FILE') as f:
+state_file = os.environ['STATE_FILE']
+traces_dir = os.environ['TRACES_DIR']
+session_id = os.environ['SESSION_ID']
+tmpfile = os.environ['TMPFILE']
+
+with open(state_file) as f:
     s = json.load(f)
 
 seq = s.get('session_action_counter', 0)
-session_id = s.get('current_session_id', '$SESSION_ID')
-trace_id = f"{session_id}-{str(seq).zfill(4)}"
+# Use session_id from state if available, fall back to env
+state_session_id = s.get('current_session_id') or session_id
+trace_id = f"{state_session_id}-{str(seq).zfill(4)}"
 
-# 合并传入的 trace JSON（从临时文件读取，避免 shell 转义问题）
+# Read extra trace data from temp file (safe: no shell interpolation)
 try:
-    with open('$TMPFILE') as tf:
+    with open(tmpfile) as tf:
         extra = json.load(tf)
 except Exception:
     extra = {}
 
 entry = {
     "trace_id": trace_id,
-    "session_id": session_id,
+    "session_id": state_session_id,
     "timestamp_utc": datetime.utcnow().isoformat() + 'Z',
     "sequence": seq,
     "outcome": None
 }
 entry.update(extra)
 
-# 追加到 trace 文件
-with open('$TRACE_FILE', 'a') as f:
+# Append to trace file
+trace_file = f"{traces_dir}/{state_session_id}.jsonl"
+with open(trace_file, 'a') as f:
     f.write(json.dumps(entry, ensure_ascii=False) + '\n')
 
-# 更新序号
+# Atomic state update
 s['session_action_counter'] = seq + 1
-with open('$STATE_FILE', 'w') as f:
+tmp_path = state_file + '.tmp'
+with open(tmp_path, 'w') as f:
     json.dump(s, f, ensure_ascii=False, indent=2)
+os.replace(tmp_path, state_file)
 
 print(f"Trace appended: {trace_id}")
 PYEOF

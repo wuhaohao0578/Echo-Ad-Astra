@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # score-outcome.sh: 记录用户对某个行动的 outcome
-# 用法: score-outcome.sh --verdict <accepted|modified|rejected> [--trace-id <id>]
+# 用法: score-outcome.sh --verdict <accepted|modified|rejected|no_response> [--trace-id <id>]
 #       [--quality <dim>:<score>] [--note "<text>"] [--mod-type <type>]
 
 set -euo pipefail
@@ -34,6 +34,15 @@ if [[ -z "$VERDICT" ]]; then
     echo "ERROR: --verdict required (accepted|modified|rejected|no_response)" >&2
     exit 1
 fi
+
+# Fix #6: Validate verdict is one of the accepted values
+case "$VERDICT" in
+    accepted|modified|rejected|no_response) ;;
+    *)
+        echo "ERROR: --verdict must be one of: accepted, modified, rejected, no_response (got: '$VERDICT')" >&2
+        exit 1
+        ;;
+esac
 
 # 如果没有提供 trace_id，使用最新的
 if [[ -z "$TRACE_ID" ]]; then
@@ -76,8 +85,13 @@ with open(sys.argv[7], 'w') as f:
     json.dump(params, f)
 " "$VERDICT" "$TRACE_ID" "$WORKFLOW" "$NOTE" "$MOD_TYPE" "$MOD_DESC" "$PARAMS_TMPFILE"
 
-STATE_FILE="$STATE_FILE" OUTCOMES_FILE="$OUTCOMES_FILE" TRACES_DIR="$TRACES_DIR" QUALITY_TMPFILE="$QUALITY_TMPFILE" PARAMS_TMPFILE="$PARAMS_TMPFILE" python3 - <<'PYEOF'
-import json, os, sys
+# Fix #1: Already uses export + <<'PYEOF' pattern (kept)
+# Fix #2: Atomic write for state.json
+# Fix #3: Atomic rewrite for trace file
+# Fix #4: Use uuid for outcome_id to avoid collision
+export STATE_FILE OUTCOMES_FILE TRACES_DIR QUALITY_TMPFILE PARAMS_TMPFILE
+python3 - <<'PYEOF'
+import json, os, uuid
 from datetime import datetime
 
 # Read params from temp files (injected via env)
@@ -100,16 +114,10 @@ mod_desc = params['mod_desc']
 with open(quality_tmpfile) as f:
     quality_args = json.load(f)
 
-# 生成 outcome_id
+# Fix #4: Use uuid-based outcome_id to avoid collision
 today = datetime.utcnow().strftime('%Y-%m-%d')
 os.makedirs(os.path.dirname(outcomes_file), exist_ok=True)
-try:
-    with open(outcomes_file) as f:
-        count = sum(1 for _ in f)
-except FileNotFoundError:
-    count = 0
-
-outcome_id = f"out-{today}-{str(count).zfill(4)}"
+outcome_id = f"out-{today}-{uuid.uuid4().hex[:8]}"
 
 # 解析 quality 参数
 quality = {}
@@ -144,14 +152,16 @@ if mod_type:
 with open(outcomes_file, 'a') as f:
     f.write(json.dumps(record, ensure_ascii=False) + '\n')
 
-# 更新 state.json
+# Fix #2: Atomic write for state.json
 with open(state_file) as f:
     s = json.load(f)
 s['outcomes_since_last_proposal'] = s.get('outcomes_since_last_proposal', 0) + 1
-with open(state_file, 'w') as f:
+tmp_path = state_file + '.tmp'
+with open(tmp_path, 'w') as f:
     json.dump(s, f, ensure_ascii=False, indent=2)
+os.replace(tmp_path, state_file)
 
-# 更新对应 trace 的 outcome 字段
+# Fix #3: Atomic rewrite for trace file
 parts = trace_id.split('-')
 # trace_id format: YYYY-MM-DD-session-NNN-NNNN
 # session_id is first 5 parts: YYYY-MM-DD-session-NNN
@@ -167,8 +177,10 @@ if len(parts) >= 6:
                     if entry.get('trace_id') == trace_id:
                         entry['outcome'] = outcome_id
                     lines.append(json.dumps(entry, ensure_ascii=False))
-        with open(trace_file, 'w') as f:
+        tmp_trace = trace_file + '.tmp'
+        with open(tmp_trace, 'w') as f:
             f.write('\n'.join(lines) + '\n')
+        os.replace(tmp_trace, trace_file)
     except FileNotFoundError:
         pass
 
