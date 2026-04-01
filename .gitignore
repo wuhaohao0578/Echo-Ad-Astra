@@ -70,3 +70,10 @@ dist/
 
 # PDF documents (原始规则书，已拆解为 Markdown)
 *.pdf
+
+# Meta-Harness：追踪数据不纳入版本控制（仅保留分析结果）
+.claude/harness/traces/
+.claude/harness/scores/outcomes.jsonl
+.claude/harness/scores/metrics.json
+# 临时提案构建文件
+/tmp/harness_*.txt
