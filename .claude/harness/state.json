@@ -1,13 +1,13 @@
 {
   "current_session_id": null,
-  "session_start_utc": "2026-03-31T19:47:28.820387Z",
+  "session_start_utc": "2026-03-31T20:15:25.759756Z",
   "session_action_counter": 0,
   "daily_session_counter": {
-    "2026-03-31": 1
+    "2026-03-31": 4
   },
   "harness_version": "2.0.0",
-  "active_candidate": "v1.0.0-2026-04-01",
-  "total_sessions_lifetime": 1,
+  "active_candidate": "v2.0.0-2026-04-01",
+  "total_sessions_lifetime": 4,
   "last_proposal_date": null,
-  "outcomes_since_last_proposal": 3
+  "outcomes_since_last_proposal": 58
 }
