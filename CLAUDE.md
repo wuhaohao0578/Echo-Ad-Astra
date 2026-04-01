@@ -1,12 +1,12 @@
 <!--
 HARNESS-METADATA
-candidate_id: v2.0.0-2026-04-01
-harness_version: 2.0.0
+candidate_id: v2.1.0-2026-04-01
+harness_version: 2.1.0
 active_since: 2026-04-01
-previous_candidate: v1.0.0-2026-04-01
+previous_candidate: v2.0.0-2026-04-01
 -->
 
-# Echo Ad Astra 创作 Harness v2.0.0
+# Echo Ad Astra 创作 Harness v2.1.0
 
 > 这是 Claude Code 的操作手册，定义了如何辅助 Echo Ad Astra TRPG 规则和小说的创作流程。
 > **本文档是一个受版本控制的 Meta-Harness 候选，会根据交互数据持续进化。**
@@ -120,7 +120,11 @@ previous_candidate: v1.0.0-2026-04-01
    - 运行验证（YAML/Markdown 格式）
    - 自动提交（版本号按规则自动更新）
 
-5. **反馈结果**（含 TRACE 注释）
+5. **反馈结果**，在响应末尾附加 TRACE：
+
+   ```
+   <!--TRACE:{"workflow":"rule_modification","step":"step5.feedback","harness_rule_ref":"workflow.rule_modification.step5","confidence":0.9,"pre_checks":[{"check":"terminology_scan","result":"pass","findings":[]},{"check":"consistency_scan","result":"pass","findings":[]}]}-->
+   ```
 
 ### 流程 2：小说内容更新
 
@@ -156,7 +160,11 @@ previous_candidate: v1.0.0-2026-04-01
    [3] 保持原样
    ```
 
-5. **更新文件、提交、反馈**
+5. **更新文件、提交、反馈**，在响应末尾附加 TRACE：
+
+   ```
+   <!--TRACE:{"workflow":"novel_update","step":"step5.file_write","harness_rule_ref":"workflow.novel_update.step5","confidence":0.85,"pre_checks":[{"check":"style_sample","result":"pass","findings":["句子节奏:4/5","叙事距离:4/5","技术密度:3/5","结构模式:4/5"]},{"check":"terminology_scan","result":"pass","findings":[]}]}-->
+   ```
 
 ### 流程 3：数值平衡检查
 
@@ -184,7 +192,11 @@ previous_candidate: v1.0.0-2026-04-01
 
 3. **等待用户决策** — 用户选择调整方案或保持现状
 
-4. **应用调整（如果需要）**
+4. **应用调整（如果需要）**，在响应末尾附加 TRACE：
+
+   ```
+   <!--TRACE:{"workflow":"balance_check","step":"step4.apply_adjustment","harness_rule_ref":"workflow.balance_check.step4","confidence":0.9,"pre_checks":[{"check":"balance_check","result":"pass","findings":[]}]}-->
+   ```
 
 ### 流程 4：文件归纳引导
 
@@ -211,7 +223,11 @@ previous_candidate: v1.0.0-2026-04-01
 
 2. **确认关联文件** — 说明会与哪些文件产生关联
 
-3. **创建文件、提交**
+3. **创建文件、提交**，在响应末尾附加 TRACE：
+
+   ```
+   <!--TRACE:{"workflow":"file_placement","step":"step3.file_write","harness_rule_ref":"workflow.file_placement.step3","confidence":0.9,"pre_checks":[{"check":"placement_decision_tree","result":"pass","findings":[]}]}-->
+   ```
 
 ### 流程 5：发布新版本
 
@@ -240,7 +256,11 @@ previous_candidate: v1.0.0-2026-04-01
 
 3. **确认发布** — 展示内容预览，等待确认
 
-4. **执行发布** — 移动 PDF，创建 Git 标签，更新 README
+4. **执行发布** — 移动 PDF，创建 Git 标签，更新 README，在响应末尾附加 TRACE：
+
+   ```
+   <!--TRACE:{"workflow":"version_release","step":"step4.publish","harness_rule_ref":"workflow.version_release.step4","confidence":0.95,"pre_checks":[{"check":"consistency_scan","result":"pass","findings":[]},{"check":"terminology_scan","result":"pass","findings":[]}]}-->
+   ```
 
 ---
 
@@ -358,15 +378,49 @@ previous_candidate: v1.0.0-2026-04-01
 bash ".claude/harness/scripts/init-session.sh"
 ```
 
-### 5.2 Trace 注释格式
+### 5.2 Trace 注释模板库
 
-每次执行关键行动后，在响应末尾附加：
+每次执行关键行动后，从下方选择对应模板复制到响应末尾（替换 `findings` 中的实际值）。此注释由 `append-trace.sh` 自动提取并记录到 trace 文件。
 
+**流程 1 — 规则修改（生成计划步骤）：**
 ```
-<!--TRACE:{"workflow":"<名>","step":"<步>","harness_rule_ref":"<ref>","confidence":<0-1>,"pre_checks":[]}-->
+<!--TRACE:{"workflow":"rule_modification","step":"generate_plan","harness_rule_ref":"workflow.rule_modification.step2","confidence":0.85,"pre_checks":[{"check":"terminology_scan","result":"pass","findings":[]},{"check":"consistency_scan","result":"pass","findings":[]}]}-->
 ```
 
-此注释由 `append-trace.sh` 自动提取并记录到 trace 文件。
+**流程 1 — 规则修改（执行修改步骤）：**
+```
+<!--TRACE:{"workflow":"rule_modification","step":"execute_edit","harness_rule_ref":"workflow.rule_modification.step4","confidence":0.9,"pre_checks":[{"check":"terminology_scan","result":"pass","findings":[]},{"check":"consistency_scan","result":"pass","findings":[]}]}-->
+```
+
+**流程 2 — 小说更新（风格检查步骤）：**
+```
+<!--TRACE:{"workflow":"novel_update","step":"style_check","harness_rule_ref":"workflow.novel_update.step2","confidence":0.8,"pre_checks":[{"check":"style_sample","result":"pass","findings":["句子节奏:N/5","叙事距离:N/5","技术密度:N/5","结构模式:N/5"]}]}-->
+```
+
+**流程 2 — 小说更新（写入文件步骤）：**
+```
+<!--TRACE:{"workflow":"novel_update","step":"file_write","harness_rule_ref":"workflow.novel_update.step5","confidence":0.85,"pre_checks":[{"check":"style_sample","result":"pass","findings":[]},{"check":"terminology_scan","result":"pass","findings":[]}]}-->
+```
+
+**流程 3 — 数值平衡（报告步骤）：**
+```
+<!--TRACE:{"workflow":"balance_check","step":"report","harness_rule_ref":"workflow.balance_check.step2","confidence":0.9,"pre_checks":[{"check":"balance_check","result":"pass","findings":[]}]}-->
+```
+
+**流程 4 — 文件放置（建议位置步骤）：**
+```
+<!--TRACE:{"workflow":"file_placement","step":"suggest_location","harness_rule_ref":"workflow.file_placement.step1","confidence":0.9,"pre_checks":[{"check":"placement_decision_tree","result":"pass","findings":[]}]}-->
+```
+
+**流程 5 — 发布版本（执行发布步骤）：**
+```
+<!--TRACE:{"workflow":"version_release","step":"publish","harness_rule_ref":"workflow.version_release.step4","confidence":0.95,"pre_checks":[{"check":"consistency_scan","result":"pass","findings":[]},{"check":"terminology_scan","result":"pass","findings":[]}]}-->
+```
+
+**通用 — 一致性检查：**
+```
+<!--TRACE:{"workflow":"ad_hoc","step":"consistency_check","harness_rule_ref":"quality.consistency_check.file_order","confidence":0.85,"pre_checks":[{"check":"consistency_scan","result":"pass","findings":[]}]}-->
+```
 
 ### 5.3 提案触发
 
@@ -483,6 +537,6 @@ bash ".claude/harness/scripts/install-candidate.sh --candidate <candidate_id>"
 ---
 
 **最后更新：** 2026-04-01
-**Harness 版本：** 2.0.0
-**活跃候选：** v2.0.0-2026-04-01
-**上一候选：** v1.0.0-2026-04-01
+**Harness 版本：** 2.1.0
+**活跃候选：** v2.1.0-2026-04-01
+**上一候选：** v2.0.0-2026-04-01

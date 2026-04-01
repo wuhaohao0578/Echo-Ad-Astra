@@ -1,14 +1,14 @@
 {
-  "current_session_id": null,
-  "session_start_utc": "2026-04-01T03:19:43.522982Z",
+  "current_session_id": "2026-04-01-session-002",
+  "session_start_utc": "2026-04-01T03:33:17.028662Z",
   "session_action_counter": 0,
   "daily_session_counter": {
     "2026-03-31": 4,
-    "2026-04-01": 1
+    "2026-04-01": 2
   },
   "harness_version": "2.0.0",
-  "active_candidate": "v2.0.0-2026-04-01",
-  "total_sessions_lifetime": 5,
-  "last_proposal_date": null,
-  "outcomes_since_last_proposal": 59
+  "active_candidate": "v2.1.0-2026-04-01",
+  "total_sessions_lifetime": 6,
+  "last_proposal_date": "2026-04-01",
+  "outcomes_since_last_proposal": 0
 }
