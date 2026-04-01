@@ -187,7 +187,7 @@ if len(parts) >= 6:
 print(f"Outcome recorded: {outcome_id} (verdict: {verdict})")
 
 # 提示是否需要运行 proposer
-threshold = 50
+threshold = 200
 outcomes_count = s['outcomes_since_last_proposal']
 if outcomes_count >= threshold:
     print(f"\n⚡ 已累积 {outcomes_count} 个 outcomes，建议运行改进提案：输入 '/propose'")

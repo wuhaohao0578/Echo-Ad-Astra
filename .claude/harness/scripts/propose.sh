@@ -31,8 +31,8 @@ with open(os.environ['STATE_FILE']) as f:
     s = json.load(f)
 outcomes_count = s.get('outcomes_since_last_proposal', 0)
 force = os.environ.get('FORCE', 'false').lower() == 'true'
-if not force and outcomes_count < 50:
-    print(f"当前 outcomes 数量（{outcomes_count}）未达到阈值（50）。", file=sys.stderr)
+if not force and outcomes_count < 200:
+    print(f"当前 outcomes 数量（{outcomes_count}）未达到阈值（200）。", file=sys.stderr)
     print("使用 --force 强制运行，或等待更多交互数据积累。", file=sys.stderr)
     sys.exit(1)
 PYEOF
