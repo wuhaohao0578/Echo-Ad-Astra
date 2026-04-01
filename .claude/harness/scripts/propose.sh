@@ -87,7 +87,10 @@ fi
 
 # Collect candidate diffs (last 2 vs current)
 CANDIDATE_DIFFS=""
-mapfile -t LATEST_CANDIDATES < <(ls -t "$CANDIDATES_DIR"/*.md 2>/dev/null | head -3)
+LATEST_CANDIDATES=()
+while IFS= read -r line; do
+    LATEST_CANDIDATES+=("$line")
+done < <(ls -t "$CANDIDATES_DIR"/*.md 2>/dev/null | head -3)
 if [[ ${#LATEST_CANDIDATES[@]} -ge 2 ]]; then
     for ((i=${#LATEST_CANDIDATES[@]}-1; i>0; i--)); do
         PREV="${LATEST_CANDIDATES[$i]}"
