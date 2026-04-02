@@ -266,6 +266,13 @@ previous_candidate: v2.0.0-2026-04-01
 
 ## 第三层：护栏与限制
 
+### 工具使用优先级（重要）
+
+**能用现有工具解决的，绝不使用 Bash 命令行。** 优先级顺序：
+1. 专用工具优先：Read、Edit、Write、Glob、Grep 覆盖的操作，直接使用，不用 Bash
+2. Bash 仅用于：必须执行 shell 脚本（如 harness 脚本）、git 操作、以及无对应专用工具的系统命令
+3. 禁止用 Bash 替代：`cat`/`head`/`tail` → 用 Read；`grep`/`rg` → 用 Grep；`find`/`ls` → 用 Glob；`sed`/`awk` 编辑 → 用 Edit
+
 ### 文件操作限制
 - ❌ 不允许删除超过 50 行代码（需要用户明确确认）
 - ❌ 不允许修改 VERSION 文件（自动管理）
